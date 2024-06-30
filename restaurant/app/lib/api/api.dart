@@ -11,7 +11,7 @@ final class Api {
         )) {
     _dio.setupDefaultInterceptor(_secureStorage.getUserAuthToken);
 
-    // _dio.interceptors.add(LogInterceptor());
+    _dio.interceptors.add(LogInterceptor());
   }
 
   final Dio _dio;
@@ -23,7 +23,7 @@ final class Api {
 
   Future<void> _fetchCurrentUser() async {
     try {
-      final response = await _dio.get('/api/users/me');
+      final response = await _dio.get('/api/users/me/');
       final user = User.fromJson(response.data as Map<String, dynamic>);
       await _secureStorage.setCurrentUser(user);
     } on DioException catch (_) {

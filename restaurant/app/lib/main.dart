@@ -16,8 +16,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('build called on main app');
-    print(_api.isUserSignedIn);
     return MaterialApp.router(
       theme: AppTheme(context: context, brightness: Brightness.light).theme(),
       routerConfig: AppRouter(_api).router,

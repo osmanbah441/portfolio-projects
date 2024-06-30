@@ -9,14 +9,14 @@ final class AppRouter {
   final Api _api;
 
   GoRouter get router => GoRouter(
-        // debugLogDiagnostics: true,
-        // redirect: (context, state) {
-        //   final isSignupPath = state.fullPath == _PathConstants.signUpPath;
-        //   if (!_api.isUserSignedIn && !isSignupPath) {
-        //     return _PathConstants.signInPath;
-        //   }
-        //   return null;
-        // },
+        debugLogDiagnostics: true,
+        redirect: (context, state) {
+          final isSignupPath = state.fullPath == _PathConstants.signUpPath;
+          if (!_api.isUserSignedIn && !isSignupPath) {
+            return _PathConstants.signInPath;
+          }
+          return null;
+        },
         initialLocation: _PathConstants.menuItemListPath,
         routes: [
           _bottomNavigationRoute,
