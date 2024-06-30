@@ -1,8 +1,7 @@
 import 'package:app/domain_models/domain_models.dart';
 
 final class UserSecureStorage {
-  // TODO: remove the hard-cored token
-  String? _userAuthToken = '7da8423859da5a76f90757816773703650d89a64';
+  String? _userAuthToken;
   User? _currentUser;
 
   bool get isUserSignedIn => _userAuthToken != null;
