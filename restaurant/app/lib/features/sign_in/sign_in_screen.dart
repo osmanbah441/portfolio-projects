@@ -91,7 +91,9 @@ class _SigninScreenViewState extends State<SigninScreenView> {
             ..showSnackBar(
               state.submissionStatus.isInvalidCredentialsError
                   ? const SnackBar(
-                      content: Text('please enter a valid user credentials'),
+                      content: Center(
+                        child: Text('invalid username or password'),
+                      ),
                     )
                   : const GenericErrorSnackBar(),
             );

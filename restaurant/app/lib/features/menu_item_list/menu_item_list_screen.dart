@@ -84,15 +84,6 @@ class _MenuItemListViewState extends State<MenuItemListView> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('refresh errror text message')),
           );
-        } else if (state.favoriteToggleError != null) {
-          final snackBar =
-              state.favoriteToggleError is UserAuthenticationRequiredException
-                  ? const AuthenticationRequiredErrorSnackBar()
-                  : const GenericErrorSnackBar();
-
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(snackBar);
         }
 
         _pagingController.value = state.toPagingState();

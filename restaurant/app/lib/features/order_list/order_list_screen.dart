@@ -10,13 +10,11 @@ import 'order_page_list_view.dart';
 
 class OrderListScreen extends StatelessWidget {
   const OrderListScreen({
-    required this.onAuthenticationError,
     required this.api,
     super.key,
     required this.onOrderSelected,
   });
 
-  final VoidCallback onAuthenticationError;
   final void Function(int id) onOrderSelected;
   final Api api;
 
@@ -27,7 +25,6 @@ class OrderListScreen extends StatelessWidget {
               api: api,
             ),
         child: OrderListView(
-          onAuthenticationError: onAuthenticationError,
           onOrderSelected: onOrderSelected,
         ));
   }
@@ -38,11 +35,9 @@ class OrderListView extends StatefulWidget {
   const OrderListView({
     super.key,
     required this.onOrderSelected,
-    required this.onAuthenticationError,
   });
 
   final void Function(int) onOrderSelected;
-  final VoidCallback onAuthenticationError;
 
   @override
   State<OrderListView> createState() => _OrderListViewState();

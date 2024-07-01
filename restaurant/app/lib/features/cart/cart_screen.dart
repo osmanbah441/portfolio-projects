@@ -65,12 +65,19 @@ class CartView extends StatelessWidget {
               child: switch (state) {
             CartStateInprogress() => const CenteredCircularProgressIndicator(),
             CartStateSuccess() => _Cart(state.cartItems, onItemTap),
-            CartStateFailure() => ExceptionIndicator(
-                onTryAgain: () {
-                  final cubit = context.read<CartCubit>();
-                  cubit.refetch();
-                },
-              ),
+            CartStateFailure() => state.error is TemporalServerDownException
+                ? ExceptionIndicator.serverDown(
+                    onTryAgain: () {
+                      final cubit = context.read<CartCubit>();
+                      cubit.refetch();
+                    },
+                  )
+                : ExceptionIndicator(
+                    onTryAgain: () {
+                      final cubit = context.read<CartCubit>();
+                      cubit.refetch();
+                    },
+                  ),
           }),
         );
       },

@@ -35,39 +35,6 @@ class MenuItemDetailsCubit extends Cubit<MenuItemDetailsState> {
     _fetchMenuItemDetails();
   }
 
-  void favoriteMenuItem() async {
-    await _executeMenuItemUpdateOperation(
-      () => _api.favoriteMenuItem(menuItemId),
-    );
-  }
-
-  void unfavoriteMenuItem() async {
-    await _executeMenuItemUpdateOperation(
-      () => _api.unfavoriteQuote(menuItemId),
-    );
-  }
-
-  Future<void> _executeMenuItemUpdateOperation(
-    Future<MenuItem> Function() updateMenuItem,
-  ) async {
-    try {
-      final updatedQuote = await updateMenuItem();
-      emit(
-        MenuItemDetailsSuccess(product: updatedQuote),
-      );
-    } catch (error) {
-      final lastState = state;
-      if (lastState is MenuItemDetailsSuccess) {
-        emit(
-          MenuItemDetailsSuccess(
-            product: lastState.product,
-            productUpdateError: error,
-          ),
-        );
-      }
-    }
-  }
-
   Future<void> addMenuItemToCart(MenuItem item) async {
     try {
       await _api.addToCart(item);

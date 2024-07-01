@@ -69,7 +69,6 @@ final class AppRouter {
         path: _PathConstants.ordersListPath,
         builder: (context, __) => OrderListScreen(
           api: _api,
-          onAuthenticationError: () {},
           onOrderSelected: (id) =>
               context.go(_PathConstants.orderDetailsPath(id)),
         ),

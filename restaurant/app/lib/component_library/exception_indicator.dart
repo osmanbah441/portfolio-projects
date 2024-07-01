@@ -13,6 +13,14 @@ class ExceptionIndicator extends StatelessWidget {
   final String? message;
   final VoidCallback? onTryAgain;
 
+  const ExceptionIndicator.serverDown({Key? key, VoidCallback? onTryAgain})
+      : this(
+          key: key,
+          title: 'down for maintenance',
+          message: 'the server is down for maintenance. Check back shortly.',
+          onTryAgain: onTryAgain,
+        );
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -41,7 +49,7 @@ class ExceptionIndicator extends StatelessWidget {
               height: 16,
             ),
             Text(
-              title ?? 'could not connect to server, check your connection',
+              message ?? 'could not connect to server, check your connection',
               textAlign: TextAlign.center,
             ),
             if (onTryAgain != null)

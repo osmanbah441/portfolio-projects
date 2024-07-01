@@ -44,7 +44,7 @@ final class OrderListBloc extends Bloc<OrderListEvent, OrderListState> {
 
     return emitter.onEach<OrderListState>(
       firstPageFetchStream.asStream(),
-      onData: emitter,
+      onData: emitter.call,
     );
   }
 
@@ -61,7 +61,7 @@ final class OrderListBloc extends Bloc<OrderListEvent, OrderListState> {
 
     return emitter.onEach<OrderListState>(
       firstPageFetchStream.asStream(),
-      onData: emitter,
+      onData: emitter.call,
     );
   }
 
@@ -83,7 +83,7 @@ final class OrderListBloc extends Bloc<OrderListEvent, OrderListState> {
 
     return emitter.onEach<OrderListState>(
       firstPageFetchStream.asStream(),
-      onData: emitter,
+      onData: emitter.call,
     );
   }
 
@@ -100,7 +100,7 @@ final class OrderListBloc extends Bloc<OrderListEvent, OrderListState> {
 
     return emitter.onEach<OrderListState>(
       firstPageFetchStream.asStream(),
-      onData: emitter,
+      onData: emitter.call,
     );
   }
 
@@ -120,7 +120,7 @@ final class OrderListBloc extends Bloc<OrderListEvent, OrderListState> {
 
     return emitter.onEach<OrderListState>(
       nextPageFetchStream.asStream(),
-      onData: emitter,
+      onData: emitter.call,
     );
   }
 

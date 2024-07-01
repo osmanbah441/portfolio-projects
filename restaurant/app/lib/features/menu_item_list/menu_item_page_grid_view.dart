@@ -39,9 +39,17 @@ class MenuItemPagedGridView extends StatelessWidget {
                     );
                   },
                   firstPageErrorIndicatorBuilder: (context) {
-                    return ExceptionIndicator(
-                      onTryAgain: () {
-                        bloc.add(const MenuItemListFailedFetchRetried());
+                    return BlocBuilder<MenuItemListBloc, MenuItemListState>(
+                      builder: (context, state) {
+                        return state.error is TemporalServerDownException
+                            ? ExceptionIndicator.serverDown(
+                                onTryAgain: () => bloc.add(
+                                    const MenuItemListFailedFetchRetried()),
+                              )
+                            : ExceptionIndicator(
+                                onTryAgain: () => bloc.add(
+                                    const MenuItemListFailedFetchRetried()),
+                              );
                       },
                     );
                   },

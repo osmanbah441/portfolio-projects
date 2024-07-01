@@ -34,10 +34,15 @@ class MenuItemCartCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(item.title, style: Theme.of(context).textTheme.titleSmall),
+              Text(
+                item.title,
+                style: Theme.of(context).textTheme.titleSmall,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 4),
               Text(
                 item.price,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: Theme.of(context).textTheme.titleMedium!.fontSize,
                   color: Theme.of(context).colorScheme.primary,

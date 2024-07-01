@@ -155,7 +155,6 @@ class OrderListView(APIView):
 
         status = self.request.query_params.get('status')
         if status:
-            print(f'status was sent {status}')
             if status.lower() == 'pending':
                 orders = orders.filter(status=0, delivery_crew__isnull=True)
             elif status.lower() == 'ongoing':

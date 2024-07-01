@@ -73,7 +73,7 @@ final class MenuItemListBloc
 
     return emitter.onEach<MenuItemListState>(
       firstPageFetchStream.asStream(),
-      onData: emitter,
+      onData: emitter.call,
     );
   }
 
@@ -84,7 +84,7 @@ final class MenuItemListBloc
 
     return emitter.onEach<MenuItemListState>(
       firstPageFetchStream.asStream(),
-      onData: emitter,
+      onData: emitter.call,
     );
   }
 
@@ -106,7 +106,7 @@ final class MenuItemListBloc
 
     return emitter.onEach<MenuItemListState>(
       firstPageFetchStream.asStream(),
-      onData: emitter,
+      onData: emitter.call,
     );
   }
 
@@ -126,7 +126,7 @@ final class MenuItemListBloc
 
     return emitter.onEach<MenuItemListState>(
       firstPageFetchStream.asStream(),
-      onData: emitter,
+      onData: emitter.call,
     );
   }
 
@@ -143,7 +143,7 @@ final class MenuItemListBloc
 
     return emitter.onEach<MenuItemListState>(
       firstPageFetchStream.asStream(),
-      onData: emitter,
+      onData: emitter.call,
     );
   }
 
@@ -163,7 +163,7 @@ final class MenuItemListBloc
 
     return emitter.onEach<MenuItemListState>(
       nextPageFetchStream.asStream(),
-      onData: emitter,
+      onData: emitter.call,
     );
   }
 

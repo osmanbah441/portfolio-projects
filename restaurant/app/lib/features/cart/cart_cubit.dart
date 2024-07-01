@@ -18,8 +18,8 @@ class CartCubit extends Cubit<CartState> {
     try {
       final cart = await _api.getCartItems();
       emit(CartStateSuccess(cartItems: cart));
-    } on Exception catch (_) {
-      rethrow;
+    } on Exception catch (e) {
+      emit(CartStateFailure(error: e));
     }
   }
 
