@@ -1,4 +1,7 @@
+import 'package:app/features/order_details/update_order_dialog.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../api/api.dart';
@@ -25,7 +28,9 @@ class OrderDetailsScreen extends StatelessWidget {
         orderId: orderId,
         api: api,
       ),
-      child: OrderDetailsView(onBackButtonTap: onBackButtonTap),
+      child: OrderDetailsView(
+        onBackButtonTap: onBackButtonTap,
+      ),
     );
   }
 }
@@ -39,28 +44,76 @@ class OrderDetailsView extends StatelessWidget {
 
   final VoidCallback onBackButtonTap;
 
+  void _showUpdateOrderToCompletedDialog(
+    BuildContext context, {
+    required VoidCallback? onUpdateStatusTapped,
+    required bool alreadyUpdated,
+  }) async =>
+      showDialog(
+        context: context,
+        builder: (context) => UpdateOrderToCompletedDialog(
+          onUpdate: onUpdateStatusTapped,
+          alreadyUpdated: alreadyUpdated,
+        ),
+      );
+
+  void _showAssignOrderToDeliveryCrewDialog(
+    BuildContext context,
+    Function(int) onAssignedDeliveryTapped,
+    List<User> deliveryCrews,
+  ) async =>
+      showDialog(
+          context: context,
+          builder: (context) => AssignOrderToDeliveryCrewDialog(
+                onAssigned: onAssignedDeliveryTapped,
+                deliveryUsers: deliveryCrews,
+              ));
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<OrderDetailsCubit, OrderDetailState>(
-      builder: (context, state) => Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: state is OrderDetailsSuccess
-              ? Text('order ${state.order.status.name}')
+      builder: (context, state) {
+        final cubit = context.read<OrderDetailsCubit>();
+
+        return Scaffold(
+          appBar: state is OrderDetailsSuccess
+              ? AppBar(
+                  centerTitle: true,
+                  title: Text('order ${state.order.status.name}'),
+                  leading: BackButton(onPressed: onBackButtonTap),
+                  actions: [
+                      if (cubit.canUpdate)
+                        IconButton(
+                          onPressed: () {
+                            cubit.isManager
+                                ? _showAssignOrderToDeliveryCrewDialog(
+                                    context,
+                                    cubit.assignDeliveryCrew,
+                                    state.deliveryCrew)
+                                : _showUpdateOrderToCompletedDialog(
+                                    context,
+                                    alreadyUpdated: state.order.status ==
+                                        OrderStatus.completed,
+                                    onUpdateStatusTapped: state.order.status ==
+                                            OrderStatus.ongoing
+                                        ? cubit.updateOrderStatusToCompleted
+                                        : null,
+                                  );
+                          },
+                          icon: const Icon(Icons.edit),
+                        )
+                    ])
               : null,
-          leading: BackButton(
-            onPressed: onBackButtonTap,
+          body: SafeArea(
+            child: switch (state) {
+              OrderDetailsInProgress() =>
+                const CenteredCircularProgressIndicator(),
+              OrderDetailsSuccess() => _OrderDetails(order: state.order),
+              OrderDetailsFailure() => const ExceptionIndicator()
+            },
           ),
-        ),
-        body: SafeArea(
-          child: switch (state) {
-            OrderDetailsInProgress() =>
-              const CenteredCircularProgressIndicator(),
-            OrderDetailsSuccess() => _OrderDetails(order: state.order),
-            OrderDetailsFailure() => const ExceptionIndicator()
-          },
-        ),
-      ),
+        );
+      },
     );
   }
 }

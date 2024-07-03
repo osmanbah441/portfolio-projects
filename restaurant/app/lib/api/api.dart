@@ -20,7 +20,7 @@ final class Api {
         _cart = const _CartItemManagement(),
         _order = _OrderItemManagement() {
     _dio.setupDefaultInterceptor(_user.getUserAuthToken);
-    _dio.interceptors.add(LogInterceptor());
+    // _dio.interceptors.add(LogInterceptor());
   }
 
   final _UserManagement _user;
@@ -41,15 +41,15 @@ final class Api {
   Future<void> requestPasswordResetEmail(String email) =>
       _user.requestPasswordResetEmail(email);
 
+  Future<List<User>> getDeliveryCrewUser() => _user.getDeliveryCrewUsers();
+
   Future<MenuItemListPage> getMenuItemListPage({
     required int page,
     MenuItemCategory? category,
     required String searchTerm,
   }) =>
       _menuItem.getMenuItemListPage(
-        page: page,
-        searchTerm: searchTerm,
-      );
+          page: page, searchTerm: searchTerm, category: category);
 
   Future<MenuItem> getMenuItemDetails(int id) =>
       _menuItem.getMenuItemDetails(id);
@@ -66,6 +66,14 @@ final class Api {
   Future<Order> getOrder(int id) => _order.getOrder(id);
 
   Future<void> placeOrder() => _order.placeOrder();
+
+// status 0 means not complete and 1 means completed
+// if the delivery crew is not null
+  Future<Order> updateOrderStatus(int orderId, int status) =>
+      _order.updateOrderStatus(orderId, status);
+
+  Future<Order> assignDeliveryCrew(int orderId, int userId) =>
+      _order.assignDeliveryCrew(orderId, userId);
 }
 
 // handle exception that can occur for GET method to the following resources

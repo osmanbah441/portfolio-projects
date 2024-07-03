@@ -58,6 +58,17 @@ class _UserManagement {
   }
 
   requestPasswordResetEmail(String value) {}
+
+  Future<List<User>> getDeliveryCrewUsers() async {
+    try {
+      final response = await _dio.get('/api/groups/delivery-crew/users');
+      final users = response.data as List;
+      return users.map((e) => User.fromJson(e)).toList();
+    } on DioException catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
 }
 
 final class _UserSecureStorage {
