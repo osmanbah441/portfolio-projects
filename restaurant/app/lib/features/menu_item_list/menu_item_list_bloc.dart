@@ -23,6 +23,9 @@ final class MenuItemListBloc
 
   final Api _api;
 
+  bool get canCreateMenuItem =>
+      _api.currentUser != null && _api.currentUser!.isManager;
+
   void _registerEventHandlers() => on<MenuItemListEvent>(
         (event, emitter) async => switch (event) {
           MenuItemListTagChanged() =>

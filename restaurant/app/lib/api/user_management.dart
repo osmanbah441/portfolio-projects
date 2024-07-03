@@ -64,8 +64,7 @@ class _UserManagement {
       final response = await _dio.get('/api/groups/delivery-crew/users');
       final users = response.data as List;
       return users.map((e) => User.fromJson(e)).toList();
-    } on DioException catch (e) {
-      print(e);
+    } on DioException catch (_) {
       rethrow;
     }
   }

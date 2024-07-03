@@ -1,47 +1,73 @@
 import 'package:app/api/api.dart';
+import 'package:app/domain_models/domain_models.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'features/features.dart';
 
+part 'scaffold_with_nav_bar.dart';
+part 'path_constant.dart';
+
 final class AppRouter {
   AppRouter(this._api);
   final Api _api;
 
+  String? _redirectUserToAllowPaths(GoRouterState state) {
+    final isSignupPath = state.fullPath == _PathConstants.signUpPath;
+    if (isSignupPath) return null;
+    if (!_api.isUserSignedIn) return _PathConstants.signInPath;
+
+    if (_api.currentUser!.isDeliveryCrew &&
+        !_PathConstants.isDeliveryCrewAllowPaths(state.fullPath)) {
+      return _PathConstants.ordersListPath;
+    }
+
+    if (_api.currentUser!.isManager &&
+        !_PathConstants.isManagerAllowPath(state.fullPath)) {
+      return _PathConstants.menuItemListPath;
+    }
+
+    return null;
+  }
+
   GoRouter get router => GoRouter(
         // debugLogDiagnostics: true,
-        redirect: (context, state) {
-          final isSignupPath = state.fullPath == _PathConstants.signUpPath;
-          if (!_api.isUserSignedIn && !isSignupPath) {
-            return _PathConstants.signInPath;
-          }
-          return null;
-        },
-        initialLocation: _PathConstants.orderDetailsPath(1),
+
+        redirect: (context, state) => _redirectUserToAllowPaths(state),
+        initialLocation: _PathConstants.menuItemListPath,
         routes: [
           _bottomNavigationRoute,
           _menuItemDetailsRoute,
           _orderDetailsRoute,
           _signInRoute,
-          _signUpRoute
+          _signUpRoute,
+          _createMenuItemPath,
+          _editMenuItemPath,
         ],
       );
 
-  ShellRoute get _bottomNavigationRoute => ShellRoute(
-          routes: [
-            _menuItemListRoute,
-            _shoppingCartRoute,
-            _orderListRoute,
-          ],
-          builder: (context, state, child) => ScaffoldWithNavBar(
-                state: state,
-                child: child,
-              ));
+  ShellRoute get _bottomNavigationRoute {
+    return ShellRoute(
+      routes: [
+        _menuItemListRoute,
+        _shoppingCartRoute,
+        _orderListRoute,
+        _usersListRoutes,
+      ],
+      builder: (context, state, child) => ScaffoldWithNavBar(
+        state: state,
+        user: _api.currentUser!,
+        child: child,
+      ),
+    );
+  }
 
   GoRoute get _menuItemListRoute => GoRoute(
         path: _PathConstants.menuItemListPath,
         builder: (context, _) => MenuItemListScreen(
           api: _api,
+          onCreateMenuItemTap: () =>
+              context.go(_PathConstants.createMenuItemPath),
           onMenuItemSelected: (id) =>
               context.go(_PathConstants.menuItemDetailsPath(id)),
         ),
@@ -51,9 +77,12 @@ final class AppRouter {
       path: _PathConstants.menuItemDetailsPath(),
       builder: (context, state) => MenuItemDetailsScreen(
             api: _api,
+            onEditMenuItemTap: (id) =>
+                context.go(_PathConstants.editMenuItemPath(id)),
             onBackButtonTap: () => context.go(_PathConstants.menuItemListPath),
             menuItemId: int.parse(
-                state.pathParameters[_PathConstants.menuIdPathParamter]!),
+              state.pathParameters[_PathConstants.menuIdPathParamter]!,
+            ),
             onCartIconTap: () => context.go(_PathConstants.shoppingCartPath),
           ));
 
@@ -107,67 +136,52 @@ final class AppRouter {
           onSignInTap: () => context.go(_PathConstants.signInPath),
         ),
       );
-}
 
-abstract final class _PathConstants {
-  const _PathConstants._();
+  GoRoute get _usersListRoutes => GoRoute(
+      path: _PathConstants.userListPath,
+      builder: (context, state) => UserListScreen(api: _api));
 
-  static const menuIdPathParamter = 'menuId';
-  static const orderIdPathParameter = 'orderId';
-
-  static String get rootPath => '/';
-
-  static String get menuItemListPath => '${rootPath}menu-items';
-
-  static String menuItemDetailsPath([int? productId]) =>
-      '$menuItemListPath/${productId ?? ":$menuIdPathParamter"}';
-
-  static String get shoppingCartPath => '${rootPath}shoppings-cart';
-
-  static String get ordersListPath => '${rootPath}orders';
-
-  static String orderDetailsPath([int? orderId]) =>
-      '$ordersListPath/${orderId ?? ":$orderIdPathParameter"}';
-
-  static String get signInPath => '${rootPath}sign-in';
-
-  static String get signUpPath => '${rootPath}sign-up';
-}
-
-class ScaffoldWithNavBar extends StatelessWidget {
-  const ScaffoldWithNavBar(
-      {super.key, required this.child, required this.state});
-
-  final Widget child;
-  final GoRouterState state;
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        bottomNavigationBar: NavigationBar(
-          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-          selectedIndex: (state.fullPath == _PathConstants.shoppingCartPath)
-              ? 1
-              : (state.fullPath == _PathConstants.ordersListPath)
-                  ? 2
-                  : 0,
-          onDestinationSelected: (index) => (index == 1)
-              ? context.go(_PathConstants.shoppingCartPath)
-              : (index == 2)
-                  ? context.go(_PathConstants.ordersListPath)
-                  : context.go(_PathConstants.menuItemListPath),
-          destinations: const [
-            NavigationDestination(
-                icon: Icon(Icons.travel_explore), label: 'explore'),
-            NavigationDestination(
-                icon: Icon(Icons.shopping_cart), label: 'cart'),
-            NavigationDestination(
-                icon: Icon(Icons.manage_history_outlined), label: 'history'),
-          ],
+  GoRoute get _createMenuItemPath => GoRoute(
+        redirect: (context, state) {
+          if (!_PathConstants.isCustomerAllowPath(
+            state.path,
+            _api.currentUser!.isManager,
+          )) {
+            return _PathConstants.menuItemListPath;
+          }
+          return null;
+        },
+        path: _PathConstants.createMenuItemPath,
+        builder: (context, state) => CreateMenuItemScreen(
+          api: _api,
+          onBackButtonTap: () => context.go(_PathConstants.menuItemListPath),
+          onEditSuccess: () {},
         ),
-        body: child,
-      ),
-    );
-  }
+      );
+
+  GoRoute get _editMenuItemPath => GoRoute(
+        redirect: (context, state) {
+          if (!_PathConstants.isCustomerAllowPath(
+            state.path,
+            _api.currentUser!.isManager,
+          )) {
+            return _PathConstants.menuItemListPath;
+          }
+          return null;
+        },
+        path: _PathConstants.editMenuItemPath(),
+        builder: (context, state) {
+          final id = int.parse(
+            state.pathParameters[_PathConstants.menuIdPathParamter]!,
+          );
+
+          return EditMenuItemScreen(
+            menuItemId: id,
+            api: _api,
+            onBackButtonTap: () =>
+                context.go(_PathConstants.menuItemDetailsPath(id)),
+            onEditSuccess: () {},
+          );
+        },
+      );
 }

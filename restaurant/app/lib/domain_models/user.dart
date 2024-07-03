@@ -18,15 +18,15 @@ class User {
     this.email,
     required this.username,
     List<String>? groups,
-  }) : _groups = groups;
+  }) : _groups = groups ?? const [];
 
   final int id;
   final String? email;
   final String username;
-  final List<String>? _groups;
+  final List<String> _groups;
 
-  bool get isManager => _groups!.contains('manager');
-  bool get isDeliveryCrew => _groups!.contains('delivery-crew');
+  bool get isManager => _groups.contains('manager');
+  bool get isDeliveryCrew => _groups.contains('delivery-crew');
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(

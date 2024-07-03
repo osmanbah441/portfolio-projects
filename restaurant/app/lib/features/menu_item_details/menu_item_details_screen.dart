@@ -13,10 +13,14 @@ class MenuItemDetailsScreen extends StatelessWidget {
     required this.api,
     super.key,
     required this.onBackButtonTap,
+    required this.onEditMenuItemTap,
   });
 
   final int menuItemId;
-  final VoidCallback onCartIconTap, onBackButtonTap;
+  final VoidCallback onCartIconTap;
+  final VoidCallback onBackButtonTap;
+  final Function(int id) onEditMenuItemTap;
+
   final Api api;
 
   @override
@@ -26,6 +30,7 @@ class MenuItemDetailsScreen extends StatelessWidget {
       child: MenuItemDetailsView(
         onCartIconTap: onCartIconTap,
         onBackButtonTap: onBackButtonTap,
+        onEditMenuItemTap: onEditMenuItemTap,
       ),
     );
   }
@@ -33,13 +38,15 @@ class MenuItemDetailsScreen extends StatelessWidget {
 
 @visibleForTesting
 class MenuItemDetailsView extends StatelessWidget {
-  const MenuItemDetailsView({
-    super.key,
-    required this.onCartIconTap,
-    required this.onBackButtonTap,
-  });
+  const MenuItemDetailsView(
+      {super.key,
+      required this.onCartIconTap,
+      required this.onBackButtonTap,
+      required this.onEditMenuItemTap});
 
-  final VoidCallback onCartIconTap, onBackButtonTap;
+  final VoidCallback onCartIconTap;
+  final VoidCallback onBackButtonTap;
+  final Function(int id) onEditMenuItemTap;
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +113,10 @@ class MenuItemDetailsView extends StatelessWidget {
           floatingActionButtonLocation:
               isSuccessState ? FloatingActionButtonLocation.centerFloat : null,
           floatingActionButton: isSuccessState
-              ? _FloatingActionButton(menuItem: state.product)
+              ? _FloatingActionButton(
+                  menuItem: state.product,
+                  onEditMenuItemTap: onEditMenuItemTap,
+                )
               : null,
         );
       },
@@ -115,21 +125,30 @@ class MenuItemDetailsView extends StatelessWidget {
 }
 
 class _FloatingActionButton extends StatelessWidget {
-  const _FloatingActionButton({required this.menuItem});
+  const _FloatingActionButton({
+    required this.menuItem,
+    required this.onEditMenuItemTap,
+  });
 
   final MenuItem menuItem;
 
+  final Function(int id) onEditMenuItemTap;
+
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<MenuItemDetailsCubit>();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: ExpandedElevatedButton(
-        icon: const Icon(Icons.shopping_cart),
-        label: 'Add to Cart',
-        onTap: () {
-          context.read<MenuItemDetailsCubit>().addMenuItemToCart(menuItem);
-        },
-      ),
+      child: cubit.canEditMenuItem
+          ? ExpandedElevatedButton(
+              label: 'edit menu item',
+              onTap: () => onEditMenuItemTap(menuItem.id),
+            )
+          : ExpandedElevatedButton(
+              icon: const Icon(Icons.shopping_cart),
+              label: 'Add to Cart',
+              onTap: () => cubit.addMenuItemToCart(menuItem),
+            ),
     );
   }
 }

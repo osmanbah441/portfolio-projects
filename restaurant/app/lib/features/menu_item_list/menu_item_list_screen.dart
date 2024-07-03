@@ -14,11 +14,14 @@ class MenuItemListScreen extends StatelessWidget {
     super.key,
     required this.api,
     required this.onMenuItemSelected,
+    required this.onCreateMenuItemTap,
     this.onProfileAvaterTap,
   });
 
   final MenuItemSelected onMenuItemSelected;
   final VoidCallback? onProfileAvaterTap;
+  final VoidCallback onCreateMenuItemTap;
+
   final Api api;
 
   @override
@@ -27,6 +30,7 @@ class MenuItemListScreen extends StatelessWidget {
       create: (_) => MenuItemListBloc(api: api),
       child: MenuItemListView(
         onMenuItemSelected: onMenuItemSelected,
+        onCreateMenuItemTap: onCreateMenuItemTap,
       ),
     );
   }
@@ -37,11 +41,13 @@ class MenuItemListView extends StatefulWidget {
   const MenuItemListView({
     super.key,
     required this.onMenuItemSelected,
+    required this.onCreateMenuItemTap,
     this.onProfileAvaterTap,
   });
 
   final MenuItemSelected onMenuItemSelected;
   final VoidCallback? onProfileAvaterTap;
+  final VoidCallback onCreateMenuItemTap;
 
   @override
   State<MenuItemListView> createState() => _MenuItemListViewState();
@@ -90,6 +96,12 @@ class _MenuItemListViewState extends State<MenuItemListView> {
       },
       child: SafeArea(
         child: Scaffold(
+          floatingActionButton: _bloc.canCreateMenuItem
+              ? FloatingActionButton.small(
+                  onPressed: widget.onCreateMenuItemTap,
+                  child: const Icon(Icons.add),
+                )
+              : null,
           body: Column(
             children: [
               Padding(

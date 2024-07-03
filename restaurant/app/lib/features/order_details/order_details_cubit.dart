@@ -54,7 +54,6 @@ class OrderDetailsCubit extends Cubit<OrderDetailState> {
           deliveryCrew: previousState.deliveryCrew,
         ));
       } catch (e) {
-        print(e);
         emit(const OrderDetailsFailure());
       }
     }
@@ -71,7 +70,6 @@ class OrderDetailsCubit extends Cubit<OrderDetailState> {
           deliveryCrew: previousState.deliveryCrew,
         ));
       } catch (e) {
-        print(e);
         emit(const OrderDetailsFailure());
       }
     }

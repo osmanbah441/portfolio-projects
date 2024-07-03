@@ -6,12 +6,17 @@ import 'routes.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(MainApp());
+  runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
-  MainApp({super.key});
+class MainApp extends StatefulWidget {
+  const MainApp({super.key});
 
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
   final _api = Api();
 
   @override

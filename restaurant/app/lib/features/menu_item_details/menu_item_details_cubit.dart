@@ -20,6 +20,9 @@ class MenuItemDetailsCubit extends Cubit<MenuItemDetailsState> {
   final int menuItemId;
   final Api _api;
 
+  bool get canEditMenuItem =>
+      _api.currentUser != null && _api.currentUser!.isManager;
+
   Future<void> _fetchMenuItemDetails() async {
     try {
       final product = await _api.getMenuItemDetails(menuItemId);
